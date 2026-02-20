@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Apology.exe</title>
+  <style>
+    :root{
+      --bg:#070A0F;
+      --green:#27ff9a;
+      --pink:#ff4d6d;
+      --white:#e9eefb;
+      --muted:#9aa6c3;
+      --card:#0e1424;
+      --border:rgba(255,255,255,0.08);
+      --glow: 0 0 18px rgba(39,255,154,0.25);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(39,255,154,0.12), transparent 55%),
+                  radial-gradient(900px 500px at 95% 20%, rgba(255,77,109,0.14), transparent 55%),
+                  var(--bg);
+      color:var(--white);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .wrap{
+      width:min(900px, 100%);
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+    }
+    .topbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.red{background:#ff5f56}
+    .dot.yellow{background:#ffbd2e}
+    .dot.green{background:#27c93f}
+    .title{
+      margin-left:10px;
+      color:var(--muted);
+      font-size:13px;
+      letter-spacing:.3px;
+    }
+
+    .content{
+      padding:18px;
+      display:grid;
+      gap:16px;
+    }
+
+    .terminal{
+      border:1px solid var(--border);
+      background: rgba(14,20,36,0.72);
+      border-radius:14px;
+      padding:16px;
+      min-height:240px;
+      position:relative;
+      box-shadow: var(--glow);
+    }
+    .terminal pre{
+      margin:0;
+      white-space:pre-wrap;
+      line-height:1.55;
+      font-size:15px;
+      color:rgba(233,238,251,0.92);
+    }
+    .cursor{
+      display:inline-block;
+      width:10px;
+      height:18px;
+      background:rgba(39,255,154,0.8);
+      margin-left:2px;
+      transform: translateY(3px);
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink{50%{opacity:0}}
+    .hint{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:10px;
+    }
+
+    .panel{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    @media (min-width:820px){
+      .panel{grid-template-columns: 1.1fr .9fr;}
+    }
+
+    .card{
+      border:1px solid var(--border);
+      background: rgba(14,20,36,0.55);
+      border-radius:14px;
+      padding:16px;
+    }
+    .card h3{
+      margin:0 0 10px 0;
+      font-size:14px;
+      color:rgba(233,238,251,0.95);
+      letter-spacing:.3px;
+    }
+    .muted{color:var(--muted); font-size:13px; line-height:1.55;}
+    .progress{
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.06);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--green), var(--pink));
+      border-radius:999px;
+      transition: width .4s ease;
+    }
+    .row{display:flex; justify-content:space-between; gap:10px; align-items:center; margin-top:10px;}
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.1);
+      color:rgba(233,238,251,0.85);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    button{
+      cursor:pointer;
+      border:none;
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:14px;
+      color:var(--white);
+      background: rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.12);
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover{background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.18);}
+    button:active{transform: scale(0.98);}
+    .primary{
+      background: linear-gradient(90deg, rgba(255,77,109,0.95), rgba(39,255,154,0.85));
+      border:0;
+    }
+    .primary:hover{filter: brightness(1.05);}
+    .ghost{background: rgba(0,0,0,0.0);}
+
+    .final{
+      display:none;
+      text-align:center;
+      padding:28px 16px 34px;
+    }
+    .heart{
+      width:86px;
+      height:86px;
+      margin:0 auto 14px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.45), transparent 35%),
+                  linear-gradient(135deg, rgba(255,77,109,1), rgba(39,255,154,0.85));
+      transform: rotate(45deg);
+      border-radius:18px;
+      position:relative;
+      box-shadow: 0 0 40px rgba(255,77,109,0.25);
+      animation: beat 1.25s infinite;
+    }
+    .heart:before,.heart:after{
+      content:"";
+      position:absolute;
+      width:86px;height:86px;
+      border-radius:50%;
+      background: inherit;
+      top:-43px; left:0;
+    }
+    .heart:after{left:-43px; top:0;}
+    @keyframes beat{
+      0%,100%{transform: rotate(45deg) scale(1);}
+      50%{transform: rotate(45deg) scale(1.08);}
+    }
+    .final h2{margin:0 0 8px 0; font-size:22px;}
+    .final p{margin:0 auto; color:rgba(233,238,251,0.88); max-width:560px; line-height:1.6;}
+    .small{color:var(--muted); font-size:12.5px; margin-top:10px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+      <div class="title">Apology.exe — secure session established</div>
+    </div>
+
+    <div class="content">
+      <div class="terminal">
+        <pre id="out"></pre><span class="cursor" id="cursor"></span>
+        <div class="hint" id="hint">Tip: if you’re viewing on iPhone, open this in Safari for best vibes.</div>
+      </div>
+
+      <div class="panel" id="panel">
+        <div class="card">
+          <h3>Heart Repair Status</h3>
+          <div class="progress"><div class="bar" id="bar"></div></div>
+          <div class="row">
+            <span class="badge" id="status">Waiting for your confirmation…</span>
+            <span class="badge" id="percent">0%</span>
+          </div>
+
+          <div class="actions" id="actions" style="display:none;">
+            <button class="primary" id="forgiveBtn">Yes, I forgive you 💗</button>
+            <button class="ghost" id="notYetBtn">Not yet</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>What I’m promising</h3>
+          <div class="muted" id="promise">
+            • I will listen first, not react first.<br/>
+            • I will speak with respect even when I’m stressed.<br/>
+            • I will protect your feelings like they matter — because they do.<br/>
+            • I will earn back your trust with actions, not just words.
+          </div>
+          <div class="actions">
+            <button id="replayBtn">Replay</button>
+            <button id="copyBtn">Copy message</button>
+          </div>
+          <div class="small" id="copied" style="display:none;">Copied. Send it to her if you want too ❤️</div>
+        </div>
+      </div>
+
+      <div class="final" id="final">
+        <div class="heart"></div>
+        <h2 id="finalTitle">Relationship restored</h2>
+        <p id="finalText"></p>
+        <div class="small">Made with effort, honesty, and a little bit of code.</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ✅ Edit these two lines only
+  const HER_NAME = "my love"; // e.g. "Aashna"
+  const YOUR_NAME = "Bipin";  // your name
+
+  const out = document.getElementById("out");
+  const cursor = document.getElementById("cursor");
+  const bar = document.getElementById("bar");
+  const statusEl = document.getElementById("status");
+  const percentEl = document.getElementById("percent");
+  const actions = document.getElementById("actions");
+  const final = document.getElementById("final");
+  const panel = document.getElementById("panel");
+
+  const replayBtn = document.getElementById("replayBtn");
+  const copyBtn = document.getElementById("copyBtn");
+  const copied = document.getElementById("copied");
+
+  const forgiveBtn = document.getElementById("forgiveBtn");
+  const notYetBtn = document.getElementById("notYetBtn");
+
+  const scriptLines = [
+    `> Establishing secure connection to ${HER_NAME}...`,
+    `> Loading feelings.db...`,
+    `> Checking my_behavior.log...`,
+    `> ALERT: I pushed you away.`,
+    `> ROOT CAUSE: I handled the moment badly.`,
+    ``,
+    `Hey ${HER_NAME},`,
+    `I’m sorry — genuinely.`,
+    `Not the “quick sorry” that tries to end the problem...`,
+    `but the real one that owns the mistake.`,
+    ``,
+    `I let my emotions speak louder than my respect for you.`,
+    `And I hate that I made you feel unwanted or distant.`,
+    ``,
+    `You didn’t deserve that.`,
+    `You deserve calm, kindness, and consistency.`,
+    ``,
+    `If you give me a chance, I want to fix this properly.`,
+    `Not with promises only — with actions.`,
+    ``,
+    `> Awaiting your response...`
+  ];
+
+  let idx = 0;
+  let typing = false;
+
+  function resetUI(){
+    out.textContent = "";
+    idx = 0;
+    typing = false;
+    bar.style.width = "0%";
+    percentEl.textContent = "0%";
+    statusEl.textContent = "Waiting for your confirmation…";
+    actions.style.display = "none";
+    copied.style.display = "none";
+    final.style.display = "none";
+    panel.style.display = "grid";
+    cursor.style.display = "inline-block";
+  }
+
+  function typeLine(line, cb){
+    let i = 0;
+    const t = setInterval(()=>{
+      out.textContent += line[i] ?? "";
+      i++;
+      if(i > line.length){
+        clearInterval(t);
+        out.textContent += "\n";
+        cb && cb();
+      }
+    }, 18);
+  }
+
+  function runTyping(){
+    if(typing) return;
+    typing = true;
+
+    const next = ()=>{
+      if(idx < scriptLines.length){
+        typeLine(scriptLines[idx], ()=>{
+          idx++;
+          // little “status” progression while typing
+          if(idx === 3){ setProgress(15, "Scanning logs…"); }
+          if(idx === 5){ setProgress(28, "Identifying mistake…"); }
+          if(idx === 9){ setProgress(45, "Packaging apology…"); }
+          if(idx === 14){ setProgress(62, "Writing with honesty…"); }
+          if(idx === 18){ setProgress(78, "Preparing to repair…"); }
+          setTimeout(next, 120);
+        });
+      } else {
+        setProgress(85, "Ready. Please choose…");
+        actions.style.display = "flex";
+      }
+    };
+    next();
+  }
+
+  function setProgress(pct, msg){
+    bar.style.width = pct + "%";
+    percentEl.textContent = pct + "%";
+    statusEl.textContent = msg;
+  }
+
+  forgiveBtn.addEventListener("click", ()=>{
+    setProgress(100, "Repair complete ✅");
+    cursor.style.display = "none";
+    setTimeout(()=>{
+      panel.style.display = "none";
+      final.style.display = "block";
+      document.getElementById("finalTitle").textContent = "❤️ Thank you for forgiving me ❤️";
+      document.getElementById("finalText").innerHTML =
+        `${HER_NAME}, I’m going to prove this with actions.<br/><br/>
+         I choose you — calmly, consistently, and respectfully.<br/>
+         <span style="color:rgba(233,238,251,0.75)">— ${YOUR_NAME}</span>`;
+    }, 650);
+  });
+
+  notYetBtn.addEventListener("click", ()=>{
+    setProgress(92, "Understood.");
+    out.textContent += "\n> Response received: NOT YET\n";
+    out.textContent += "> Respecting boundaries...\n";
+    out.textContent += `\nThat’s okay, ${HER_NAME}.\n`;
+    out.textContent += "You don’t owe forgiveness quickly.\n";
+    out.textContent += "I’ll give you space — and I’ll still be better.\n";
+    out.textContent += `\n— ${YOUR_NAME}\n`;
+  });
+
+  replayBtn.addEventListener("click", ()=>{
+    resetUI();
+    runTyping();
+  });
+
+  copyBtn.addEventListener("click", async ()=>{
+    const message =
+`Hey ${HER_NAME},
+I’m sorry — genuinely.
+I let my emotions speak louder than my respect for you, and I pushed you away.
+You didn’t deserve that. You deserve calm, kindness, and consistency.
+If you give me a chance, I want to fix this properly — with actions.
+— ${YOUR_NAME}`;
+    try{
+      await navigator.clipboard.writeText(message);
+      copied.style.display = "block";
+      setTimeout(()=>copied.style.display="none", 1800);
+    }catch(e){
+      copied.style.display = "block";
+      copied.textContent = "Couldn’t auto-copy on this device — but you can screenshot it ❤️";
+      setTimeout(()=>{ copied.style.display="none"; copied.textContent="Copied. Send it to her if you want too ❤️"; }, 2200);
+    }
+  });
+
+  // start
+  resetUI();
+  runTyping();
+</script>
+</body>
+</html>
